@@ -4,7 +4,7 @@
 
 // isGammaRestoreOnCrashEnabled is recommended to be true. When eqgame crashes, this restores your gamma. future EQ clients have this enabled.
 // This also may fix eq trying to modify your gamma settings
-bool isGammaRestoreOnCrashEnabled = false;
+bool isGammaRestoreOnCrashEnabled = true;
 
 // isCpuSpeedFixEnabled is recommended to be true. Some CPUs have a symptom where the game runs too fast, future EQ clients have this enabled
 // if a person reports the game running too fast, try enabling and giving this DLL.
@@ -19,7 +19,7 @@ bool isMQInjectsEnabled = false;
 bool isMapWindowDisabled = false;
 
 // areLuclinModelsDisabled if set to true disables the ability for luclin models to load, forcing classic models
-bool areLuclinModelsDisabled = false;
+bool areLuclinModelsDisabled = true;
 
 // isBazaarWindowDisabled if set to true will disable the bazaar window in game by doing a soft patch.
 bool isBazaarWindowDisabled = false;
@@ -32,10 +32,10 @@ bool isHeroicDisabled = false;
 bool isMaxHPFixEnabled = false;
 
 // isPatchmeDisabled if set to true will let you double click eqgame.exe and not get the "Please run EverQuest" message, will start properly
-bool isPatchmeDisabled = false;
+bool isPatchmeDisabled = true;
 
 // isFoodDrinkSpamDisabled if set to true will stop you are hungry/thirsty messages to display on client. If server side isn't disabled, you can still get negative effects.
-bool isFoodDrinkSpamDisabled = false;
+bool isFoodDrinkSpamDisabled = true;
 
 // isMQ2PreventionEnabled if set to true will do basic prevention of mq2 by randomizing the version string, primitive anticheat
 bool isMQ2PreventionEnabled = false;
@@ -80,10 +80,10 @@ static NPCEntry NPCs[] = {
 // ***** ZONE *******
 
 // areCustomZonesEnabled if set to true will allow custom zones defined in Zones[] to be injected in game
-bool areCustomZonesEnabled = false;
+bool areCustomZonesEnabled = true;
 
 static ZoneEntry Zones[] = {
     // zoneType, zoneID, zoneShortName, zoneLongName, eqStrID, zoneFlags2, x, y, z
-    ZoneEntry(0, 787, "hollows", "Darkened Hollows", 35154, 4, 0, 0, 0),
+    ZoneEntry(0, 785, "village", "Kokoriko Village", 2243, 4, 0, 0, 0),
 };
 #endif

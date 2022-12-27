@@ -542,6 +542,23 @@ unsigned char __fastcall SendMessage_Detour(DWORD* con, unsigned __int32 unk, un
 	bExeChecksumrequested = 1;
 	int16_t opcode = 0;
 	memcpy(&opcode, buf, 2);
+	DebugSpew("Got packet 0x%X", opcode);
+	if (opcode == 0x6969) {
+		DebugSpew("Got packet identifier 0x%X", opcode);
+		Checksum_Struct* cs = (Checksum_Struct*)buf;
+		SimpleChecksum_Struct* scs = new SimpleChecksum_Struct;
+		memset(scs, 0, sizeof(SimpleChecksum_Struct));
+		scs->opcode = 0x6969;
+		scs->checksum = cs->checksum;
+
+		retval = SendMessage_Trampoline(con, unk, channel, (char*)scs,
+			sizeof(Checksum_Struct), a6, a7);
+		
+		delete scs;
+
+		return retval;
+	}
+
 	if (opcode == 0xf13 || opcode == 0x578f)
 	{
 		if (isReportHardwareAddressEnabled) {
@@ -784,7 +801,9 @@ void InitHooks()
 	if (!baseAddress) return;
 	InitOptions();
 
+	// Add OpCode hook
 	DWORD var = (((DWORD)0x008C4CE0 - 0x400000) + baseAddress);
+	EzDetour((DWORD)var, SendMessage_Detour, SendMessage_Trampoline);
 
 	if (isCpuSpeedFixEnabled) {
 
