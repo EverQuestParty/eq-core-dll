@@ -6691,8 +6691,13 @@ FUNCTION_AT_ADDRESS(int __cdecl UdpMisc::PutValue32(void *,unsigned int),UdpMisc
 FUNCTION_AT_ADDRESS(void  UdpConnection::SetSilentDisconnect(bool),UdpConnection__SetSilentDisconnect);
 #endif
 #ifdef UdpConnection__Send_x
-//FUNCTION_AT_ADDRESS(bool  UdpConnection::Send(enum UdpChannel,void const *,int),UdpConnection__Send);
+FUNCTION_AT_ADDRESS(bool UdpConnection::Send(enum UdpChannel,void const *,int), UdpConnection__Send);
 #endif
+
+#ifdef PacketScrambler__hton_x
+FUNCTION_AT_ADDRESS(int CPacketScrambler::hton(int a1, int a2), PacketScrambler__hton);
+#endif
+
 #ifdef UdpConnection__InternalSend_x
 //FUNCTION_AT_ADDRESS(bool  UdpConnection::InternalSend(enum UdpChannel,unsigned char const *,int,unsigned char const *,int),UdpConnection__InternalSend);
 #endif

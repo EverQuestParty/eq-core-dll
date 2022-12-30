@@ -336,6 +336,7 @@ class STextureAnimationFrame;
 class StringItem;
 class StringTable;
 class TextFileReader;
+class CPacketScrambler;
 class type_info;
 class UdpConnection;
 class UdpConnectionHandler;
@@ -6636,10 +6637,18 @@ EQLIB_OBJECT type_info::~type_info(void);
 //EQLIB_OBJECT void * type_info::`vector deleting destructor'(unsigned int);
 };
 
+class CPacketScrambler
+{
+public:
+EQLIB_OBJECT CPacketScrambler::~CPacketScrambler(void);
+EQLIB_OBJECT CPacketScrambler::CPacketScrambler(class CPacketScrambler*);
+EQLIB_OBJECT int CPacketScrambler::hton(int a1, int a2);
+};
+
 class UdpConnection
 {
 public:
-//EQLIB_OBJECT bool UdpConnection::Send(enum UdpChannel,void const *,int);
+EQLIB_OBJECT bool UdpConnection::Send(enum UdpChannel,void const *,int);
 EQLIB_OBJECT int UdpConnection::ConnectionAge(void)const;
 EQLIB_OBJECT int UdpConnection::LastReceive(void)const;
 EQLIB_OBJECT int UdpConnection::TotalPendingBytes(void)const;

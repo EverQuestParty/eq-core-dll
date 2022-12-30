@@ -1199,6 +1199,8 @@ EQLIB_VAR DWORD StringTable__getString;
 
 EQLIB_VAR DWORD PcZoneClient__GetPcSkillLimit;
 
+EQLIB_VAR DWORD UdpConnection__Send;
+EQLIB_VAR DWORD PacketScrambler__hton;
 
 }
 using namespace MQ2Globals;

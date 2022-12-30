@@ -668,3 +668,7 @@
 
 // PcZoneClient
 #define PcZoneClient__GetPcSkillLimit_x                            0x584BE0
+
+#define UdpConnection__Send_x                                      0x4C45F0
+
+#define PacketScrambler__hton_x                                    0x3CF7C0
