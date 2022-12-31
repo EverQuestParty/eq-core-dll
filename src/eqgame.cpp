@@ -526,15 +526,7 @@ unsigned char __cdecl SendExe_Detour(DWORD con)
 {
 	return SendExe_Tramp(con);
 }
-
-unsigned char __fastcall HandleWorldMessage_Trampoline(DWORD *con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size);
-unsigned char __fastcall HandleWorldMessage_Detour(DWORD *con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size)
-{
-	return HandleWorldMessage_Trampoline(con, edx, unk, opcode, buf, size);
-}
-
-DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall HandleWorldMessage_Trampoline(DWORD *con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size));
-
+//int *this, int a2, int a3, size_t a4, int a5, size_t a6)
 unsigned char __fastcall SendMessage_Trampoline(DWORD*, unsigned __int32, unsigned __int32, char* buf, size_t, DWORD, DWORD);
 unsigned char __fastcall SendMessage_Detour(DWORD* con, unsigned __int32 unk, unsigned __int32 channel, char* buf, size_t size, DWORD a6, DWORD a7)
 {
@@ -542,22 +534,12 @@ unsigned char __fastcall SendMessage_Detour(DWORD* con, unsigned __int32 unk, un
 	bExeChecksumrequested = 1;
 	int16_t opcode = 0;
 	memcpy(&opcode, buf, 2);
-	DebugSpew("Got packet 0x%X", opcode);
-	if (opcode == 0x6969) {
-		DebugSpew("Got packet identifier 0x%X", opcode);
-		Checksum_Struct* cs = (Checksum_Struct*)buf;
-		SimpleChecksum_Struct* scs = new SimpleChecksum_Struct;
-		memset(scs, 0, sizeof(SimpleChecksum_Struct));
-		scs->opcode = 0x6969;
-		scs->checksum = cs->checksum;
-
-		retval = SendMessage_Trampoline(con, unk, channel, (char*)scs,
-			sizeof(Checksum_Struct), a6, a7);
-		
-		delete scs;
-
-		return retval;
-	}
+	if (opcode != 0x7dfc &&
+		opcode != 0x46c6 &&
+		opcode != 0x97b &&
+		opcode != 0x2a79 &&
+		opcode != 0x971 &&
+		opcode != 0x83) DebugSpew("-> 0x%X %d %d", opcode, a6, a7);
 
 	if (opcode == 0xf13 || opcode == 0x578f)
 	{
@@ -630,6 +612,35 @@ unsigned char __fastcall SendMessage_Detour(DWORD* con, unsigned __int32 unk, un
 }
 
 DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall SendMessage_Trampoline(DWORD*, unsigned __int32, unsigned __int32, char* buf, size_t, DWORD, DWORD));
+
+unsigned char __fastcall HandleWorldMessage_Trampoline(DWORD *con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size);
+unsigned char __fastcall HandleWorldMessage_Detour(DWORD *con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size)
+{
+	DebugSpew("<- 0x%X", opcode);
+	switch (opcode) {
+	case 0x6969:
+		DebugSpew("Got expected packet 6969");
+
+		//SendReliableMessage_Detour(0x6969, 0, (char*)0x0102, 3);
+		//SendMessage_Trampoline(con, 4, 4, (char*)0x69690102, 4, 0, 0);
+	}
+	return HandleWorldMessage_Trampoline(con, edx, unk, opcode, buf, size);
+}
+
+DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall HandleWorldMessage_Trampoline(DWORD* con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size));
+
+unsigned char __fastcall SendReliableMessage_Trampoline(DWORD* con, int priority, char* buf, size_t data_len);
+unsigned char __fastcall SendReliableMessage_Detour(DWORD *con, int priority, char* buf, size_t data_len)
+{
+	//int16_t opcode = 0;
+	//memcpy(&opcode, buf, 2);
+	DebugSpew("rudp -> 0x%X", 123);
+
+	
+	return SendReliableMessage_Trampoline(con, priority, buf, data_len);
+}
+
+DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall SendReliableMessage_Trampoline(DWORD* con, int priority, char* buf, size_t data_len));
 
 DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall SetDeviceGammaRamp_Trampoline(HDC hdc, LPVOID lpRamp));
 
@@ -805,6 +816,9 @@ void InitHooks()
 	DWORD var = (((DWORD)0x008C4CE0 - 0x400000) + baseAddress);
 	EzDetour((DWORD)var, SendMessage_Detour, SendMessage_Trampoline);
 
+	var = (((DWORD)0x008C51F0 - 0x400000) + baseAddress);
+	EzDetour((DWORD)var, SendReliableMessage_Detour, SendReliableMessage_Trampoline);
+	
 	if (isCpuSpeedFixEnabled) {
 
 		
