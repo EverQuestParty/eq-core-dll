@@ -497,6 +497,7 @@ EQLIB_VAR CCastSpellWnd **ppCastSpellWnd;
 EQLIB_VAR CSpellBookWnd **ppSpellBookWnd;
 EQLIB_VAR CInventoryWnd **ppInventoryWnd;
 EQLIB_VAR CBankWnd **ppBankWnd;
+EQLIB_VAR UdpConnection **ppUdpConnection;
 EQLIB_VAR CQuantityWnd **ppQuantityWnd;
 EQLIB_VAR CTextEntryWnd **ppTextEntryWnd;
 EQLIB_VAR CFileSelectionWnd **ppFileSelectionWnd;
@@ -584,6 +585,7 @@ EQLIB_VAR CPotionBeltWnd **ppPotionBeltWnd;
 #define pSpellBookWnd (*ppSpellBookWnd)
 #define pInventoryWnd (*ppInventoryWnd)
 #define pBankWnd (*ppBankWnd)
+#define pUdpConnection (*ppUdpConnection)
 #define pQuantityWnd (*ppQuantityWnd)
 #define pTextEntryWnd (*ppTextEntryWnd)
 #define pFileSelectionWnd (*ppFileSelectionWnd)
@@ -853,6 +855,7 @@ EQLIB_VAR DWORD pinstCTitleWnd;
 EQLIB_VAR DWORD pinstCContextMenuManager;
 EQLIB_VAR DWORD pinstCVoiceMacroWnd;
 EQLIB_VAR DWORD pinstCHtmlWnd;
+EQLIB_VAR DWORD pinstUdpConnection;
 
 EQLIB_VAR DWORD __CastRay;
 EQLIB_VAR DWORD __ConvertItemTags;
@@ -1199,6 +1202,7 @@ EQLIB_VAR DWORD StringTable__getString;
 
 EQLIB_VAR DWORD PcZoneClient__GetPcSkillLimit;
 
+EQLIB_VAR DWORD Player__SendReliableMessage;
 
 }
 using namespace MQ2Globals;

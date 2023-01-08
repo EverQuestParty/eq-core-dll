@@ -86,6 +86,16 @@ std::map<DWORD,_detourinfo> ourdetours;
 	__asm{jmp eax};\
 }
 
+class Player {
+public:
+	int SendReliableMessage(int message_id, const char* data, size_t data_len);
+	int SendReliableMessage_Detour(int message_id, const char* data, size_t data_len) {
+		return this->SendReliableMessage(message_id, data, data_len);
+	}
+};
+
+FUNCTION_AT_ADDRESS(int Player::SendReliableMessage(int message_id, const char* data, size_t data_len), Player__SendReliableMessage);
+
 #define EQ_FUNCTION_flush_mouse 0x0055B5B9
 #ifdef EQ_FUNCTION_flush_mouse
 FUNCTION_AT_ADDRESS(signed int EQ_flush_mouse(), EQ_FUNCTION_flush_mouse);
@@ -541,16 +551,22 @@ unsigned char __fastcall SendMessage_Detour(DWORD* con, unsigned __int32 unk, un
 		opcode != 0x971 &&
 		opcode != 0x83) DebugSpew("-> 0x%X %d %d", opcode, a6, a7);
 
+	if (opcode == 0x7dfc) {
+		//DebugSpew("sending challenge response 0x%X %d %d", opcode, a6, a7);
+		//SendMessage_Trampoline(con, unk, 0x6969, (char*)"test", 5, a6, a7);
+		//is_challenge_requested = false;
+	}
+
 	if (opcode == 0xf13 || opcode == 0x578f)
 	{
 		if (isReportHardwareAddressEnabled) {
+
 			IP_ADAPTER_INFO AdapterInfo[16];
 			BYTE macAddress[8];
 			memset(macAddress, 0, sizeof(macAddress));
 			DWORD dwBufLen = sizeof(AdapterInfo);
 			DWORD dwStatus = GetAdaptersInfo(AdapterInfo, &dwBufLen);
-			if (dwStatus == ERROR_SUCCESS)
-			{
+			if (dwStatus == ERROR_SUCCESS) {
 
 				IP_ADAPTER_INFO AdapterInfo[16];
 				DWORD dwBufLen = sizeof(AdapterInfo);
@@ -620,7 +636,10 @@ unsigned char __fastcall HandleWorldMessage_Detour(DWORD *con, DWORD edx, unsign
 	switch (opcode) {
 	case 0x6969:
 		DebugSpew("Got expected packet 6969");
+		
+		//is_challenge_requested = true;
 
+		((int(__thiscall*) (UdpConnection*, int, const char*, int)) Player__SendReliableMessage)(pUdpConnection, 0x6969, "test", 5);
 		//SendReliableMessage_Detour(0x6969, 0, (char*)0x0102, 3);
 		//SendMessage_Trampoline(con, 4, 4, (char*)0x69690102, 4, 0, 0);
 	}
@@ -628,19 +647,6 @@ unsigned char __fastcall HandleWorldMessage_Detour(DWORD *con, DWORD edx, unsign
 }
 
 DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall HandleWorldMessage_Trampoline(DWORD* con, DWORD edx, unsigned __int32 unk, unsigned __int16 opcode, char* buf, size_t size));
-
-unsigned char __fastcall SendReliableMessage_Trampoline(DWORD* con, int priority, char* buf, size_t data_len);
-unsigned char __fastcall SendReliableMessage_Detour(DWORD *con, int priority, char* buf, size_t data_len)
-{
-	//int16_t opcode = 0;
-	//memcpy(&opcode, buf, 2);
-	DebugSpew("rudp -> 0x%X", 123);
-
-	
-	return SendReliableMessage_Trampoline(con, priority, buf, data_len);
-}
-
-DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall SendReliableMessage_Trampoline(DWORD* con, int priority, char* buf, size_t data_len));
 
 DETOUR_TRAMPOLINE_EMPTY(unsigned char __fastcall SetDeviceGammaRamp_Trampoline(HDC hdc, LPVOID lpRamp));
 
@@ -813,12 +819,21 @@ void InitHooks()
 	InitOptions();
 
 	// Add OpCode hook
-	DWORD var = (((DWORD)0x008C4CE0 - 0x400000) + baseAddress);
-	EzDetour((DWORD)var, SendMessage_Detour, SendMessage_Trampoline);
-
-	var = (((DWORD)0x008C51F0 - 0x400000) + baseAddress);
-	EzDetour((DWORD)var, SendReliableMessage_Detour, SendReliableMessage_Trampoline);
+	//DWORD var = (((DWORD)0x008C4CE0 - 0x400000) + baseAddress);
+	//EzDetour((DWORD)var, SendMessage_Detour, SendMessage_Trampoline);
 	
+	DWORD var = Player__SendReliableMessage;
+	intptr_t addr;
+	{
+		auto fp = &Player::SendReliableMessage_Detour; // &CEverQuest__InterpretCmd_Detour_type::CEverQuest__InterpretCmd_Detour;
+		memcpy(&addr, &fp, 4);
+	}
+	/*
+	intptr_t addr = (intptr_t)NP_CEverQuest__InterpretCmd_Detour - (intptr_t)0x00413DF6 - 5;*/
+
+	PatchA((void*)(var), &addr, 4);
+
+
 	if (isCpuSpeedFixEnabled) {
 
 		

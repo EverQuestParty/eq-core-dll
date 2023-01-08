@@ -189,6 +189,7 @@
 #define pinstCSpellBookWnd_x                                       0xD1FC88
 #define pinstCInventoryWnd_x                                       0xD1FC8C
 #define pinstCBankWnd_x                                            0xD1FC90
+#define pinstUdpConnection_x                                       0xDD25AC
 #define pinstCQuantityWnd_x                                        0xD1FC94
 #define pinstCLootWnd_x                                            0xD1FC98
 #define pinstCActionsWnd_x                                         0xD1FC9C
@@ -668,3 +669,5 @@
 
 // PcZoneClient
 #define PcZoneClient__GetPcSkillLimit_x                            0x584BE0
+
+#define Player__SendReliableMessage_x                              0x008C51F0
