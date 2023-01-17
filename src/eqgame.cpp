@@ -94,7 +94,9 @@ public:
 	}
 };
 
-FUNCTION_AT_ADDRESS(int Player::SendReliableMessage(int message_id, const char* data, size_t data_len), Player__SendReliableMessage);
+
+#define EQ_FUNCTION_SendReliableMessage 0x008C51F0
+FUNCTION_AT_ADDRESS(int Player::SendReliableMessage(int message_id, const char* data, size_t data_len), EQ_FUNCTION_SendReliableMessage);
 
 #define EQ_FUNCTION_flush_mouse 0x0055B5B9
 #ifdef EQ_FUNCTION_flush_mouse
@@ -828,11 +830,12 @@ void InitHooks()
 		auto fp = &Player::SendReliableMessage_Detour; // &CEverQuest__InterpretCmd_Detour_type::CEverQuest__InterpretCmd_Detour;
 		memcpy(&addr, &fp, 4);
 	}
-	/*
-	intptr_t addr = (intptr_t)NP_CEverQuest__InterpretCmd_Detour - (intptr_t)0x00413DF6 - 5;*/
+	//TODO: fix crash
+	//PatchA((void*)(var), &addr, 4);
 
-	PatchA((void*)(var), &addr, 4);
-
+	DebugSpew("disabling distance on doors");
+	var = (((DWORD)0x00538E42 - 0x400000) + baseAddress);
+	PatchA((DWORD*)var, "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
 
 	if (isCpuSpeedFixEnabled) {
 
